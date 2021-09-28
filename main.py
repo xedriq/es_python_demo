@@ -7,16 +7,28 @@ from elasticsearch_dsl import Search, connections, Q, index
 es = Elasticsearch('192.168.3.225:9200')
 
 query = {
-    'match': {
-        'title': 'duterte'
+    "bool": {
+        "must_not": [
+            {
+                "match": {
+                    "content": "covid"
+                }
+            }
+        ],
+        "must": [
+            {
+                "match": {
+                    "title": "duterte"
+                }
+            }
+        ]
     }
 }
 
-res = es.search(index="articles_jan_2021", query=query, track_total_hits=True, size=10)
-# print(res)
-print("Got %d Hits:" % res['hits']['total']['value'])
+res = es.search(index="articles_jan_2021", query=query,
+                track_total_hits=True)
+
 for hit in res['hits']['hits']:
     print(hit["_source"])
-
-# res = es.search(index='articles_jan_2021', q={'match_all': {}})
-# print(res)
+    
+print("Got %d Hits:" % res['hits']['total']['value'])
